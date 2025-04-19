@@ -70,27 +70,29 @@ body {
 
 /* Navbar text color based on theme */
 html[data-bs-theme="light"] .navbar {
-    color: var(--text-color);
+    color: #212529;
+    background-color: rgba(248, 249, 250, 0.8);
 }
 
 html[data-bs-theme="light"] .navbar-nav .nav-link {
-    color: var(--text-color);
+    color: #212529 !important;
 }
 
 html[data-bs-theme="light"] .navbar-nav .nav-link.active {
-    color: #6366f1;
+    color: #6366f1 !important;
 }
 
 html[data-bs-theme="dark"] .navbar {
     color: white;
+    background-color: rgba(33, 37, 41, 0.8);
 }
 
 html[data-bs-theme="dark"] .navbar-nav .nav-link {
-    color: white;
+    color: white !important;
 }
 
 html[data-bs-theme="dark"] .navbar-nav .nav-link.active {
-    color: #a5b4fc;
+    color: #a5b4fc !important;
 }
 
 .navbar-brand {
@@ -219,28 +221,60 @@ html[data-bs-theme="dark"] .form-control {
 
 /* Fix text-muted visibility in light mode */
 /* Fix text colors in both themes */
+/* Comprehensive text visibility fix for light theme */
 html[data-bs-theme="light"] {
     color-scheme: light;
+    color: #212529;
 }
 
 html[data-bs-theme="dark"] {
     color-scheme: dark;
+    color: #f8f9fa;
 }
 
-html[data-bs-theme="light"] .text-muted {
+/* Fix all text elements in light mode */
+html[data-bs-theme="light"] p,
+html[data-bs-theme="light"] h1,
+html[data-bs-theme="light"] h2,
+html[data-bs-theme="light"] h3,
+html[data-bs-theme="light"] h4,
+html[data-bs-theme="light"] h5,
+html[data-bs-theme="light"] h6,
+html[data-bs-theme="light"] span:not(.badge),
+html[data-bs-theme="light"] div:not(.progress),
+html[data-bs-theme="light"] a:not(.btn):not(.nav-link),
+html[data-bs-theme="light"] li,
+html[data-bs-theme="light"] label {
+    color: #212529 !important;
+}
+
+/* Exception for text in cards and forms */
+html[data-bs-theme="light"] .card .text-muted,
+html[data-bs-theme="light"] .form-text {
     color: #6c757d !important;
+}
+
+/* Primary and focused elements with brand color */
+html[data-bs-theme="light"] .nav-link.active,
+html[data-bs-theme="light"] a:hover:not(.btn) {
+    color: #6366f1 !important;
+}
+
+/* Dark theme text adjustments */
+html[data-bs-theme="dark"] p,
+html[data-bs-theme="dark"] h1,
+html[data-bs-theme="dark"] h2,
+html[data-bs-theme="dark"] h3,
+html[data-bs-theme="dark"] h4,
+html[data-bs-theme="dark"] h5,
+html[data-bs-theme="dark"] h6,
+html[data-bs-theme="dark"] span:not(.badge),
+html[data-bs-theme="dark"] div:not(.progress) {
+    color: #f8f9fa;
 }
 
 html[data-bs-theme="dark"] .text-muted {
     color: #adb5bd !important;
-}
-
-html[data-bs-theme="light"] p {
-    color: #212529;
-}
-
-html[data-bs-theme="dark"] p {
-    color: #f8f9fa;
 }
 
 .form-control:focus {
