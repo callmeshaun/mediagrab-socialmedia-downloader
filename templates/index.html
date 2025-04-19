@@ -1,0 +1,139 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-download me-2"></i>Instagram Post & Reel Downloader
+                </h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('download') }}" method="POST" id="download-form">
+                    <div class="mb-3">
+                        <label for="instagram_url" class="form-label">Instagram URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fab fa-instagram"></i>
+                            </span>
+                            <input type="url" class="form-control" id="instagram_url" name="instagram_url" 
+                                placeholder="https://www.instagram.com/p/..." required>
+                            <button class="btn btn-primary" type="submit" id="download-btn">
+                                <i class="fas fa-download me-1"></i> Download
+                            </button>
+                        </div>
+                        <div class="form-text">Paste an Instagram post or reel URL to download its content</div>
+                    </div>
+                </form>
+                
+                <div class="alert alert-info mt-3">
+                    <h5><i class="fas fa-info-circle me-2"></i>How to use:</h5>
+                    <ol class="mb-0">
+                        <li>Copy the URL of an Instagram post or reel</li>
+                        <li>Paste it in the input box above</li>
+                        <li>Click the Download button</li>
+                        <li>Wait for the content to be fetched</li>
+                        <li>Download the media using the button provided</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        {% if session.get('download_result') and session.get('download_result').success %}
+        <div class="card shadow mb-4" id="result-card">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-check-circle me-2"></i>Download Ready
+                </h4>
+                <form action="{{ url_for('clear_result') }}" method="POST">
+                    <button type="submit" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </form>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h5>@{{ session.get('download_result').username }}</h5>
+                    
+                    {% if session.get('download_result').caption %}
+                    <p class="text-muted small">
+                        {{ session.get('download_result').caption[:100] }}{% if session.get('download_result').caption|length > 100 %}...{% endif %}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="content-preview my-4">
+                        {% if session.get('download_result').media_type == 'video' %}
+                        <div class="ratio ratio-16x9">
+                            <video controls class="rounded">
+                                <source src="{{ session.get('download_result').media_url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        {% else %}
+                        <img src="{{ session.get('download_result').media_url }}" alt="Instagram Image" class="img-fluid rounded shadow-sm" style="max-height: 500px;">
+                        {% endif %}
+                    </div>
+                    
+                    <a href="{{ session.get('download_result').media_url }}" download="instagram_{{ session.get('download_result').shortcode }}.{{ 'mp4' if session.get('download_result').media_type == 'video' else 'jpg' }}" target="_blank" class="btn btn-lg btn-success">
+                        <i class="fas fa-download me-2"></i>Download {{ session.get('download_result').media_type|capitalize }}
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>FAQ
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                What content can I download?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can download images and videos from public Instagram posts and reels. Private content cannot be accessed.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Is this legal?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                This tool is for personal use only. Be sure to respect copyright laws and Instagram's terms of service. Don't use downloaded content for commercial purposes without permission.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                I'm getting an error, what should I do?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Make sure the URL is correct and from a public profile</li>
+                                    <li>Try again later as Instagram may rate-limit requests</li>
+                                    <li>Some posts may have restricted download access</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
