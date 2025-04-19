@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Post & Reel Downloader</title>
+    <title>MediaGrab - Social Media Downloader</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <meta name="theme-color" content="#6366f1">
     
     <!-- Bootstrap CSS (Replit-themed) -->
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
@@ -11,20 +15,56 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fab fa-instagram me-2"></i>
-                Instagram Downloader
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <div class="brand-icon me-2">
+                    <i class="fas fa-bolt-lightning"></i>
+                </div>
+                <span class="brand-text">MediaGrab</span>
             </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">
+                            <i class="fab fa-instagram me-1"></i> Instagram
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled coming-soon" href="#">
+                            <i class="fab fa-youtube me-1"></i> YouTube Shorts
+                            <span class="badge bg-warning text-dark ms-1">Coming Soon</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="hero-section py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h1 class="display-5 fw-bold mb-3">Download Your Favorite Social Media Content</h1>
+                    <p class="lead mb-4">Fast, free, and no login required. Just paste the URL and download!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-2">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -39,12 +79,27 @@
         {% block content %}{% endblock %}
     </div>
 
-    <footer class="container mt-5 mb-3 text-center text-muted">
-        <p>
-            &copy; 2023 Instagram Downloader
-            <br>
-            <small>This tool is for personal use only. Please respect Instagram's terms of service.</small>
-        </p>
+    <footer class="footer mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3"><i class="fas fa-bolt-lightning me-2"></i>MediaGrab</h5>
+                    <p class="mb-0">Download content from your favorite social media platforms easily and quickly.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-1">&copy; 2025 MediaGrab</p>
+                    <small class="text-muted">This tool is for personal use only. Please respect the terms of service of the platforms.</small>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="feature-notice text-center">
+                        <span class="badge bg-info text-dark me-2">Coming Soon</span>
+                        <span>Quality Selection & YouTube Shorts Download</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <!-- Bootstrap JS Bundle -->
