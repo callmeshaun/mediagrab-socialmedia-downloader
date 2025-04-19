@@ -68,6 +68,31 @@ body {
     border-bottom: 1px solid var(--card-border);
 }
 
+/* Navbar text color based on theme */
+html[data-bs-theme="light"] .navbar {
+    color: var(--text-color);
+}
+
+html[data-bs-theme="light"] .navbar-nav .nav-link {
+    color: var(--text-color);
+}
+
+html[data-bs-theme="light"] .navbar-nav .nav-link.active {
+    color: #6366f1;
+}
+
+html[data-bs-theme="dark"] .navbar {
+    color: white;
+}
+
+html[data-bs-theme="dark"] .navbar-nav .nav-link {
+    color: white;
+}
+
+html[data-bs-theme="dark"] .navbar-nav .nav-link.active {
+    color: #a5b4fc;
+}
+
 .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
