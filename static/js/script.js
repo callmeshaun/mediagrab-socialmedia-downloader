@@ -1,4 +1,30 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Theme toggle functionality
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (themeToggleBtn) {
+        // Check if user has a saved preference
+        const savedTheme = localStorage.getItem('theme');
+        
+        // Apply the saved theme or default to light mode (already set in HTML)
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+        
+        themeToggleBtn.addEventListener('click', function() {
+            // Get current theme
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            
+            // Toggle theme
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Save preference to local storage
+            localStorage.setItem('theme', newTheme);
+            
+            // Apply new theme
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+        });
+    }
+    
     // Form submission handler
     const downloadForm = document.getElementById('download-form');
     const downloadBtn = document.getElementById('download-btn');
