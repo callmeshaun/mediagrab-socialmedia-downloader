@@ -85,27 +85,25 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Paste URL from clipboard feature
-        const pasteFromClipboard = document.createElement('button');
-        pasteFromClipboard.type = 'button';
-        pasteFromClipboard.className = 'btn btn-secondary position-absolute end-0 top-0 mt-1 me-5';
-        pasteFromClipboard.innerHTML = '<i class="fas fa-paste"></i>';
-        pasteFromClipboard.title = 'Paste from clipboard';
-        pasteFromClipboard.style.zIndex = '5';
-        
-        pasteFromClipboard.addEventListener('click', async () => {
-            try {
-                const text = await navigator.clipboard.readText();
-                urlInput.value = text;
-                // Trigger input event to validate
-                urlInput.dispatchEvent(new Event('input'));
-            } catch (err) {
-                console.error('Failed to read clipboard: ', err);
-            }
-        });
-        
-        urlInput.parentElement.style.position = 'relative';
-        urlInput.parentElement.appendChild(pasteFromClipboard);
+        // Paste URL from clipboard button
+        const pasteButton = document.getElementById('paste-button');
+        if (pasteButton) {
+            pasteButton.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    urlInput.value = text;
+                    // Trigger input event to validate
+                    urlInput.dispatchEvent(new Event('input'));
+                } catch (err) {
+                    console.error('Failed to read clipboard: ', err);
+                    // Show error tooltip or message
+                    pasteButton.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Error';
+                    setTimeout(() => {
+                        pasteButton.innerHTML = '<i class="fas fa-clipboard me-1"></i> Paste';
+                    }, 2000);
+                }
+            });
+        }
     }
     
     // Add "Copy Link" button functionality if needed
