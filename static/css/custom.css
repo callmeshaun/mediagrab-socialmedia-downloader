@@ -208,6 +208,41 @@ html[data-bs-theme="dark"] #light-icon {
     color: var(--text-color);
 }
 
+/* Ensure all text is visible in both themes */
+html[data-bs-theme="light"] .form-control {
+    color: #212529;
+}
+
+html[data-bs-theme="dark"] .form-control {
+    color: #fff;
+}
+
+/* Fix text-muted visibility in light mode */
+/* Fix text colors in both themes */
+html[data-bs-theme="light"] {
+    color-scheme: light;
+}
+
+html[data-bs-theme="dark"] {
+    color-scheme: dark;
+}
+
+html[data-bs-theme="light"] .text-muted {
+    color: #6c757d !important;
+}
+
+html[data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}
+
+html[data-bs-theme="light"] p {
+    color: #212529;
+}
+
+html[data-bs-theme="dark"] p {
+    color: #f8f9fa;
+}
+
 .form-control:focus {
     background-color: var(--input-bg);
     border-color: #6366f1;
