@@ -11,6 +11,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Download button handler
+    const downloadLinkBtn = document.querySelector('.download-btn');
+    if (downloadLinkBtn) {
+        downloadLinkBtn.addEventListener('click', function(e) {
+            // Visual feedback that download is starting
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Downloading...';
+            
+            // After a brief delay, restore the button text
+            setTimeout(() => {
+                this.innerHTML = originalText;
+            }, 2000);
+        });
+    }
+    
     // Auto dismiss alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
@@ -43,6 +58,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+        
+        // Paste URL from clipboard feature
+        const pasteFromClipboard = document.createElement('button');
+        pasteFromClipboard.type = 'button';
+        pasteFromClipboard.className = 'btn btn-secondary position-absolute end-0 top-0 mt-1 me-5';
+        pasteFromClipboard.innerHTML = '<i class="fas fa-paste"></i>';
+        pasteFromClipboard.title = 'Paste from clipboard';
+        pasteFromClipboard.style.zIndex = '5';
+        
+        pasteFromClipboard.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                urlInput.value = text;
+                // Trigger input event to validate
+                urlInput.dispatchEvent(new Event('input'));
+            } catch (err) {
+                console.error('Failed to read clipboard: ', err);
+            }
+        });
+        
+        urlInput.parentElement.style.position = 'relative';
+        urlInput.parentElement.appendChild(pasteFromClipboard);
     }
     
     // Add "Copy Link" button functionality if needed

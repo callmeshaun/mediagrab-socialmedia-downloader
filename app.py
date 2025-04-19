@@ -1,6 +1,7 @@
 import os
 import logging
 import shutil
+import requests
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, session
 from werkzeug.middleware.proxy_fix import ProxyFix
 from instagram_downloader import download_instagram_content, is_valid_instagram_url
@@ -79,12 +80,44 @@ def download_file(filename):
         file_path = os.path.join(DOWNLOAD_FOLDER, filename)
         
         if not os.path.exists(file_path):
-            flash('The requested file does not exist.', 'danger')
+            # Check if we have a URL in the session that we can download directly
+            if 'download_result' in session and session['download_result'].get('media_url'):
+                # Extract necessary info from session
+                media_url = session['download_result']['media_url']
+                media_type = session['download_result'].get('media_type', 'image')
+                
+                logger.info(f"Attempting direct download from {media_url} to {file_path}")
+                
+                # Create directory if it doesn't exist
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                
+                # Download the file
+                try:
+                    response = requests.get(media_url, stream=True, timeout=10)
+                    if response.status_code == 200:
+                        with open(file_path, 'wb') as f:
+                            for chunk in response.iter_content(chunk_size=8192):
+                                f.write(chunk)
+                        logger.info(f"Direct download successful to: {file_path}")
+                    else:
+                        logger.error(f"Failed to download directly: {response.status_code}")
+                        raise Exception(f"Failed to download file: HTTP {response.status_code}")
+                except Exception as e:
+                    logger.error(f"Error with direct download: {str(e)}")
+                    raise
+            else:
+                flash('The requested file does not exist.', 'danger')
+                return redirect(url_for('index'))
+        
+        # Double-check the file exists after attempted download
+        if not os.path.exists(file_path):
+            flash('Failed to download the file. Please try again.', 'danger')
             return redirect(url_for('index'))
         
         # Determine content type
         content_type = 'video/mp4' if filename.endswith('.mp4') else 'image/jpeg'
         
+        # Explicitly specify attachment disposition to force download
         return send_file(
             file_path,
             mimetype=content_type,
