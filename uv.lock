@@ -563,6 +563,7 @@ dependencies = [
     { name = "gunicorn" },
     { name = "instaloader" },
     { name = "psycopg2-binary" },
+    { name = "requests" },
     { name = "trafilatura" },
     { name = "werkzeug" },
 ]
@@ -575,6 +576,7 @@ requires-dist = [
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "instaloader", specifier = ">=4.14.1" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "requests", specifier = ">=2.32.3" },
     { name = "trafilatura", specifier = ">=2.0.0" },
     { name = "werkzeug", specifier = ">=3.1.3" },
 ]

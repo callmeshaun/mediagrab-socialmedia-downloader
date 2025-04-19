@@ -1,16 +1,23 @@
 import os
 import logging
+import shutil
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, flash, session
 from werkzeug.middleware.proxy_fix import ProxyFix
 from instagram_downloader import download_instagram_content, is_valid_instagram_url
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Create the Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "default-secret-key-for-development")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+# Create downloads folder if it doesn't exist
+DOWNLOAD_FOLDER = os.path.join(app.root_path, 'downloads')
+if not os.path.exists(DOWNLOAD_FOLDER):
+    os.makedirs(DOWNLOAD_FOLDER)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -35,6 +42,23 @@ def download():
         result = download_instagram_content(instagram_url)
         
         if result['success']:
+            # If we have a file path, save it to our downloads folder
+            if 'file_path' in result and os.path.exists(result['file_path']):
+                # Create a filename
+                shortcode = result['shortcode']
+                file_extension = 'mp4' if result['media_type'] == 'video' else 'jpg'
+                filename = f"instagram_{shortcode}.{file_extension}"
+                
+                # Set destination path
+                dest_path = os.path.join(DOWNLOAD_FOLDER, filename)
+                
+                # Copy the file to our download folder
+                shutil.copy2(result['file_path'], dest_path)
+                
+                # Update the result with our local file path
+                result['local_file_path'] = dest_path
+                result['download_filename'] = filename
+            
             # Store the result in session for display
             session['download_result'] = result
             flash('Content successfully retrieved!', 'success')
@@ -46,6 +70,30 @@ def download():
     except Exception as e:
         logging.error(f"Download error: {str(e)}")
         flash(f"An error occurred: {str(e)}", 'danger')
+        return redirect(url_for('index'))
+
+@app.route('/download_file/<filename>')
+def download_file(filename):
+    """Serve the downloaded file to the user."""
+    try:
+        file_path = os.path.join(DOWNLOAD_FOLDER, filename)
+        
+        if not os.path.exists(file_path):
+            flash('The requested file does not exist.', 'danger')
+            return redirect(url_for('index'))
+        
+        # Determine content type
+        content_type = 'video/mp4' if filename.endswith('.mp4') else 'image/jpeg'
+        
+        return send_file(
+            file_path,
+            mimetype=content_type,
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        logger.error(f"Error serving file: {str(e)}")
+        flash(f"Error downloading file: {str(e)}", 'danger')
         return redirect(url_for('index'))
 
 @app.route('/clear', methods=['POST'])

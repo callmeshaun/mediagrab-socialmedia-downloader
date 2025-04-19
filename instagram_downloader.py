@@ -4,6 +4,7 @@ import tempfile
 import logging
 import instaloader
 import urllib.parse
+import requests
 from pathlib import Path
 
 # Configure logging
@@ -11,7 +12,12 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Initialize the instaloader instance
-L = instaloader.Instaloader()
+L = instaloader.Instaloader(download_videos=True, 
+                           download_video_thumbnails=False,
+                           download_geotags=False,
+                           download_comments=False,
+                           save_metadata=False,
+                           post_metadata_txt_pattern='')
 
 def is_valid_instagram_url(url):
     """Check if the URL is a valid Instagram post or reel URL."""
@@ -65,21 +71,51 @@ def download_instagram_content(url):
                     media_type = 'image'
                     file_extension = 'jpg'
                 
-                # Download the post to the temporary directory
-                L.download_post(post, target=temp_dir)
+                # For images, we can try to download directly from the URL if instaloader fails
+                downloaded_file = None
+                try:
+                    # First try to use instaloader to download the post
+                    L.download_post(post, target=temp_dir)
+                    
+                    # Find the downloaded file
+                    pattern = f'*{shortcode}*.{file_extension}'
+                    downloaded_files = list(Path(temp_dir).glob(pattern))
+                    
+                    if downloaded_files:
+                        downloaded_file = str(downloaded_files[0])
+                    else:
+                        logger.warning(f"Instaloader did not download files that match pattern: {pattern}")
+                        # List all files in the temp directory for debugging
+                        all_files = list(Path(temp_dir).glob('*'))
+                        logger.debug(f"Files in temp directory: {all_files}")
                 
-                # Find the downloaded file
-                downloaded_files = list(Path(temp_dir).glob(f'*{shortcode}*.{file_extension}'))
+                except Exception as e:
+                    logger.error(f"Error with instaloader download: {str(e)}")
                 
-                if not downloaded_files:
+                # If instaloader failed to download, try direct download
+                if not downloaded_file:
+                    logger.info(f"Attempting direct download from {media_url}")
+                    try:
+                        response = requests.get(media_url, stream=True, timeout=10)
+                        if response.status_code == 200:
+                            direct_path = os.path.join(temp_dir, f"instagram_{shortcode}.{file_extension}")
+                            with open(direct_path, 'wb') as f:
+                                for chunk in response.iter_content(chunk_size=8192):
+                                    f.write(chunk)
+                            downloaded_file = direct_path
+                            logger.info(f"Direct download successful: {downloaded_file}")
+                        else:
+                            logger.error(f"Failed to download directly: {response.status_code}")
+                    except Exception as e:
+                        logger.error(f"Error with direct download: {str(e)}")
+                
+                if not downloaded_file:
                     return {
                         'success': False,
-                        'error': f'Failed to download the {media_type}.'
+                        'error': f'Failed to download the {media_type}. Please try again later.'
                     }
                 
-                downloaded_file = str(downloaded_files[0])
-                
-                # For simplicity, we'll use the direct URL
+                # For simplicity, we'll still provide the direct URL for preview
                 return {
                     'success': True,
                     'media_type': media_type,

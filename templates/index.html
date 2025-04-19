@@ -75,9 +75,15 @@
                         {% endif %}
                     </div>
                     
+                    {% if session.get('download_result').get('download_filename') %}
+                    <a href="{{ url_for('download_file', filename=session.get('download_result').download_filename) }}" class="btn btn-lg btn-success">
+                        <i class="fas fa-download me-2"></i>Download {{ session.get('download_result').media_type|capitalize }}
+                    </a>
+                    {% else %}
                     <a href="{{ session.get('download_result').media_url }}" download="instagram_{{ session.get('download_result').shortcode }}.{{ 'mp4' if session.get('download_result').media_type == 'video' else 'jpg' }}" target="_blank" class="btn btn-lg btn-success">
                         <i class="fas fa-download me-2"></i>Download {{ session.get('download_result').media_type|capitalize }}
                     </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
