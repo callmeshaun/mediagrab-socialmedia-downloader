@@ -127,11 +127,19 @@ def download_instagram_content(url):
                 }
                 
             except instaloader.exceptions.InstaloaderException as e:
-                logger.error(f"Instaloader error: {str(e)}")
-                return {
-                    'success': False,
-                    'error': f'Instagram error: {str(e)}'
-                }
+                error_msg = str(e)
+                if "401 Unauthorized" in error_msg and "Please wait" in error_msg:
+                    logger.error("Rate limit reached. Please wait a few minutes before trying again.")
+                    return {
+                        'success': False,
+                        'error': 'Instagram rate limit reached. Please wait a few minutes before trying again.'
+                    }
+                else:
+                    logger.error(f"Instaloader error: {error_msg}")
+                    return {
+                        'success': False,
+                        'error': f'Instagram error: {error_msg}'
+                    }
     
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
